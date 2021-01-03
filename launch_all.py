@@ -6,6 +6,7 @@ import os
 
 def launch(cmd, errfile, logfile):
     '''Launch single prepid test'''
+    print(cmd)
     prepid = cmd.split(' ')[1]
     os.makedirs(prepid)
     with open(errfile, 'w') as ferr, open(logfile, 'w') as flog:
@@ -18,8 +19,10 @@ with open('prepid_list_random.txt') as f:
 
 pool = multiprocessing.Pool(processes=8)
 for line in lines:
-    print('processing: ', line.replace('\n',''))
-    prepid = line.split()[0]
+    prepid, name = line.split()
+    if any([n in name for n in ['nlo', 'NLO', 'fxfx', 'FXFX']]):
+        print('  - skip', prepid, name)
+        continue
     pool.apply_async(launch, args=(f'./launch_prepid.sh {prepid}', f'{prepid}/main.err', f'{prepid}/main.log'))
 
 print("Starting tasks...")

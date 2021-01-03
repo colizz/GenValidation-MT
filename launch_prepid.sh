@@ -54,6 +54,12 @@ diff ${PREPID}_1_cfg.py ${PREPID}_1_cfg-mt.py > cfg.diff
 wait
 
 # ============================================================================ #
+# Check the cmsRun output exists
+if [ ! -e orig/${PREPID}_inDQM.root ] || [ ! -e mult/${PREPID}_inDQM.root ]; then
+    echo "cmsRun breaks!"
+    exit 1
+fi
+
 # Create folder for validation
 mkdir -p validation/orig && mv orig/${PREPID}_inDQM.root validation/orig/DQM_orig.root
 mkdir -p validation/mult && mv mult/${PREPID}_inDQM.root validation/mult/DQM_mult.root
