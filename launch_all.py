@@ -17,7 +17,7 @@ def launch(cmd, errfile, logfile):
 with open('prepid_list_random.txt') as f:
     lines = f.readlines()
 
-pool = multiprocessing.Pool(processes=8)
+pool = multiprocessing.Pool(processes=16)
 for line in lines:
     prepid, name = line.split()
     if any([n in name for n in ['nlo', 'NLO', 'fxfx', 'FXFX']]):

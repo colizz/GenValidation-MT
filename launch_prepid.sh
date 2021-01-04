@@ -48,16 +48,28 @@ cp ${PREPID}_1_cfg.py ${PREPID}_1_cfg-mt.py
 ../prepare_mult_cfg.py -i ${PREPID}_1_cfg-mt.py --mg-mult --pythia-conc
 diff ${PREPID}_1_cfg.py ${PREPID}_1_cfg-mt.py > cfg.diff
 
-# Run generated config
-{ mkdir orig && cd orig && cmsRun -e -j ../${PREPID}_report.xml    ../${PREPID}_1_cfg.py    > cmsRun.log 2>&1; } &
-{ mkdir mult && cd mult && cmsRun -e -j ../${PREPID}_report-mt.xml ../${PREPID}_1_cfg-mt.py > cmsRun.log 2>&1; } &
-wait
+# Launch cmsRun
+mkdir mult
+cd mult
+cmsRun -e -j ../${PREPID}_report-mt.xml ../${PREPID}_1_cfg-mt.py > ../cmsRun-mt.log 2>&1
+cd ..
+
+if grep -q "while this gridpack might be a MG NLO or non-MG one" cmsRun.log; then
+  echo "Gripack is not a MG LO one. This is not the sample we should check"
+  rm -r mult/lheevent
+  exit 1
+fi
+
+mkdir orig
+cd orig
+cmsRun -e -j ../${PREPID}_report.xml    ../${PREPID}_1_cfg.py    > ../cmsRun.log 2>&1
+cd ..
 
 # ============================================================================ #
 # Check the cmsRun output exists
 if [ ! -e orig/${PREPID}_inDQM.root ] || [ ! -e mult/${PREPID}_inDQM.root ]; then
-    echo "cmsRun breaks!"
-    exit 1
+  echo "cmsRun breaks!"
+  exit 1
 fi
 
 # Create folder for validation
