@@ -54,9 +54,10 @@ cd mult
 cmsRun -e -j ../${PREPID}_report-mt.xml ../${PREPID}_1_cfg-mt.py > ../cmsRun-mt.log 2>&1
 cd ..
 
-if grep -q "while this gridpack might be a MG NLO or non-MG one" cmsRun.log; then
+if grep -q "while this gridpack might be a MG NLO or non-MG one" cmsRun-mt.log; then
   echo "Gripack is not a MG LO one. This is not the sample we should check"
   rm -r mult/lheevent
+  cd .. && mv ${PREPID} ${PREPID}__nMGLO
   exit 1
 fi
 
@@ -69,6 +70,7 @@ cd ..
 # Check the cmsRun output exists
 if [ ! -e orig/${PREPID}_inDQM.root ] || [ ! -e mult/${PREPID}_inDQM.root ]; then
   echo "cmsRun breaks!"
+  cd .. && mv ${PREPID} ${PREPID}__fail
   exit 1
 fi
 
