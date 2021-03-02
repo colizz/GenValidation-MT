@@ -45,7 +45,7 @@ cmsDriver.py Configuration/GenProduction/python/${PREPID}-fragment.py --python_f
 
 # Prepare multithread cfg
 cp ${PREPID}_1_cfg.py ${PREPID}_1_cfg-mt.py
-../prepare_mult_cfg.py -i ${PREPID}_1_cfg-mt.py --mg-mult --pythia-conc
+../utils/prepare_mult_cfg.py -i ${PREPID}_1_cfg-mt.py --mg-mult --pythia-conc
 diff ${PREPID}_1_cfg.py ${PREPID}_1_cfg-mt.py > cfg.diff
 
 # Launch cmsRun
