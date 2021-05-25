@@ -1,17 +1,28 @@
 #!/bin/bash 
 
 ### settings to modify
-RELEASE=CMSSW_10_6_19
-ODIR=validation
+if [ -n "$1" ]; then RELEASE=$1; else RELEASE=CMSSW_10_6_19; fi
+if [ -n "$2" ]; then ODIR=$2; else ODIR=validation; fi
 # maximum number of files to compare (making sure we are comparing the same state) 
 NFILES=100 
 # name of sub directories in $ODIR containing the samples to compare 
-TAGONE=orig
-TAGTWO=mult
+if [ -n "$3" ]; then TAGONE=$3; else TAGONE=orig; fi
+if [ -n "$4" ]; then TAGTWO=$4; else TAGTWO=mult; fi
+if [ -n "$5" ]; then YEAR=$4; else YEAR=UL17; fi
 ### done with settings 
+
+if [[ "$YEAR" == *"UL16"* ]]; then
+  conditions=106X_mcRun2_asymptotic_v13
+elif [[ "$YEAR" == *"UL17"* ]]; then
+  conditions=106X_mc2017_realistic_v6
+else
+  echo "Not UL16/17"
+  exit -1
+fi
 
 ### setup environment
 source /cvmfs/cms.cern.ch/cmsset_default.sh
+export SCRAM_ARCH=slc7_amd64_gcc700
 pushd ..
 
 if [ -r ${RELEASE}/src ] ; then
@@ -34,7 +45,7 @@ popd
 
 ### make python fragment for harvesting 
 cmsDriver.py step3  --python_file harvest.py --no_exec \
-    --conditions 106X_mc2017_realistic_v6 --filein file:SUBINFILE \
+    --conditions $conditions --filein file:SUBINFILE \
     -s HARVESTING:genHarvesting --harvesting AtJobEnd \
     --filetype DQM --era Run2_2017 --mc  -n 1000000 
 
@@ -84,5 +95,5 @@ compare_using_files.py DQM_V0001_R000999999__Global__${CMSSW_VERSION}_${TAGONE}_
 
 
 ### clean up 
-rm harvest.py 
+rm harvest.py
 # rm DQM*.root 
